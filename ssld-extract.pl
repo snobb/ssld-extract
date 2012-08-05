@@ -26,10 +26,10 @@ my $conf = {
     num     => {},
     port    => {},
     debug   => 0,
-    version => "0.2",
+    version => "0.21",
   };
 
-if (defined @ARGV) { 
+if (@ARGV) { 
   open PIPE, "<$ARGV[scalar @ARGV - 1]" or die "Cannot open file: $!\n";
 } else {
   &usage;
