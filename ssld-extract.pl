@@ -40,6 +40,7 @@ if (@ARGV) {
 my $in = 0;
 
 while (<PIPE>) {
+  # reading new connection record
   if (/New \w+ connection #(\d+): [\d\.]+\((\d+)\)/) {
     print "DEBUG: $1 $2 $conf->{'num'} $conf->{'port'}\n" if $conf->{'debug'};
     
@@ -50,7 +51,11 @@ while (<PIPE>) {
       $in++;
     }
   }
+
+  # record belongs to the current record - printing
   if (/^\s+/) { print if $in; }
+
+  # checking if the record belongs to interesting connections
   if (/^(\d+)/) {
     if ($conf->{'num'}->{$1}) {
       print;
