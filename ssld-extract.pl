@@ -50,13 +50,9 @@ while (<PIPE>) {
       $conf->{'port'}->{$2}++;
       $in++;
     }
-  }
-
-  # record belongs to the current record - printing
-  if (/^\s+/) { print if $in; }
-
-  # checking if the record belongs to interesting connections
-  if (/^(\d+)/) {
+  } elsif (/^\s+/) {     # record belongs to the current record - printing
+    print if $in; 
+  } elsif (/^(\d+)/) {   # checking if the record belongs to interesting connections
     if ($conf->{'num'}->{$1}) {
       print;
       $in++;
