@@ -26,7 +26,7 @@ my $conf = {
     num     => {},
     port    => {},
     debug   => 0,
-    version => "0.21",
+    version => "0.22",
   };
 
 if (@ARGV) { 
@@ -47,7 +47,7 @@ while (<PIPE>) {
     if ($conf->{'num'}->{$1} || $conf->{'port'}->{$2}) {
       print;
       $conf->{'num'}->{$1}++;
-      $conf->{'port'}->{$2}++;
+      #$conf->{'port'}->{$2}++;  # fixing matching by the port even if searching based on connections.
       $in++;
     }
   } elsif (/^\s+/) {     # record belongs to the current record - printing
