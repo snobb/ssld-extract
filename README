@@ -1,5 +1,6 @@
 ssld-extract v0.2, Alex Kozadaev(c)
-  
+ssld-extract (python edition) v0.1, Alex Kozadaev(c)
+
   ssld-extact [-n x,y | -p n,m] [ssldump filename | - to read from pipe]
 
   Extract one or more connections from a SSL dump file.
