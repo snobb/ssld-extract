@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# Copyright (C) 2001 by Alex Kozadaev <akozadaev at yahoo dot com>
+# Copyright (C) 2011 by Alex Kozadaev <akozadaev at yahoo dot com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
