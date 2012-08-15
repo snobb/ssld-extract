@@ -23,8 +23,7 @@
 
 import sys
 
-# TODO: I am new to python so I reckon the code needs 
-# optimisation and refactoring
+# TODO: I am new to python so I reckon the code needs optimisation and refactoring
 #=============================================================
 conf = {'ports': set(), 'conns': set()}
 version = '0.1'
@@ -133,6 +132,7 @@ def die(msg):
     print "ERROR: {}".format(msg)
     exit()
 
+#=============================================================
 def warn(msg):
     print "WARN: {}".format(msg)
 
