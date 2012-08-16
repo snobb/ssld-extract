@@ -21,12 +21,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.#
 
-import sys
+import sys, signal
 
 # TODO: I am new to python so I reckon the code needs optimisation and refactoring
 #=============================================================
-conf = {'ports': set(), 'conns': set()}
-version = '0.1'
+conf = { 'ports': set(), 'conns': set() }
+version = '0.11'
 
 #=============================================================
 def parse(infile):
@@ -79,6 +79,7 @@ def parse(infile):
 #=============================================================
 def readargs():
     infile = None
+    if (len(sys.argv) == 1): usage()
     program = sys.argv.pop(0)
     for val in sys.argv:
             if val == '-p':
@@ -130,14 +131,20 @@ def usage():
 #=============================================================
 def die(msg):
     print "ERROR: {}".format(msg)
-    exit()
+    exit(1)
 
 #=============================================================
 def warn(msg):
     print "WARN: {}".format(msg)
 
+def handler(signum, frame):
+    print "\nexiting..."
+    exit(1)
+
 #==[ main ]===================================================
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, handler)
+    signal.signal(signal.SIGTERM, handler)
     parse(readargs())
 
 # vim: set tabstop=4 softtabstop=4 shiftwidth=4 smarttab ai expandtab
