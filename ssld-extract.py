@@ -26,7 +26,7 @@ import sys, signal
 # TODO: I am new to python so I reckon the code needs optimisation and refactoring
 #=============================================================
 conf = { 'ports': set(), 'conns': set() }
-version = '0.11'
+version = '0.12'
 
 #=============================================================
 def parse(infile):
@@ -63,7 +63,6 @@ def parse(infile):
             try:
                 val = line[: line.index(' ') ]
             except ValueError:
-                warn("cannot parse connection number")
                 inside = False
                 next
 
@@ -134,9 +133,6 @@ def die(msg):
     exit(1)
 
 #=============================================================
-def warn(msg):
-    print "WARN: {}".format(msg)
-
 def handler(signum, frame):
     print "\nexiting..."
     exit(1)
