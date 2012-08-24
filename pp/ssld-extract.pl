@@ -89,9 +89,9 @@ sub readarg {
 
 sub usage {
   print <<END
-ssld-extract v$conf->{version}, Alex Kozadaev(c)
+ssld-extract.pl v$conf->{version}, Alex Kozadaev(c)
   
-  ssld-extact [-n x,y | -p n,m] [ssldump filename | - to read from pipe]
+  ssld-extact.pl [-n x,y | -p n,m] [ssldump filename | - to read from pipe]
 
   Extract one or more connections from a SSL dump file.
   

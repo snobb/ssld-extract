@@ -110,9 +110,9 @@ def readvalues(values, cfgset):
 
 #=============================================================
 def usage():
-    print """ssld-extract (python-edition) v{} Alex Kozadaev(C)
+    print """ssld-extract.py (python-edition) v{} Alex Kozadaev(C)
 
-    ssld-extact [-n x,y | -p n,m] [ssldump filename | - to read from pipe]
+    ssld-extact.py [-n x,y | -p n,m] [ssldump filename | - to read from pipe]
 
     Extract one or more connections from a SSL dump file.
 

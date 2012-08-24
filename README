@@ -1,5 +1,6 @@
-ssld-extract v0.2, Alex Kozadaev(c)
-ssld-extract (python edition) v0.1, Alex Kozadaev(c)
+ssld-extract v1.02, Alex Kozadaev(c)
+
+SSLDump filtering tool
 
   ssld-extact [-n x,y | -p n,m] [ssldump filename | - to read from pipe]
 
@@ -11,4 +12,8 @@ ssld-extract (python edition) v0.1, Alex Kozadaev(c)
     -h    this text
 
   PLEASE NOTE: -n overrides -p, so when used together -p will not have any effect.
+
+Also encluded:
+  ssld-extract.py (python edition) v0.12c, Alex Kozadaev(c)
+  ssld-extract.pl (perl edition) v0.22, Alex Kozadaev(c)
 
