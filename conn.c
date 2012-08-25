@@ -3,7 +3,7 @@
 
 #include "conn.h"
 
-struct conn_st conn = { NULL, NULL, 0, INIT };
+static struct conn_st conn = { NULL, NULL, 0, INIT };
 
 /*=============================================================================*/
 bool

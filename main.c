@@ -7,7 +7,7 @@
 
 #include "conn.h"
 
-#define VERSION "1.02"
+#define VERSION "1.03"
 #define MAX     2048
 
 /* TODO: refactor the code(partially done). Its kinda ugly and written within a couple of hours. 
