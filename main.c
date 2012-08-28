@@ -1,5 +1,33 @@
 /*  main.c  */
-/*  Copyright (C) 2012 Alex Kozadaev [akozadaev at yahoo com]  */
+
+/*  Copyright (C) 2012 Alex Kozadaev [akozadaev at yahoo com]
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are
+ *  met:
+ *
+ *  * Redistributions of source code must retain the above copyright
+ *  notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above
+ *  copyright notice, this list of conditions and the following disclaimer
+ *  in the documentation and/or other materials provided with the
+ *  distribution.
+ *  * Neither the name of the nor the names of its
+ *  contributors may be used to endorse or promote products derived from
+ *  this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 #include <stdio.h>
 #include <string.h>
@@ -10,9 +38,10 @@
 #define VERSION "1.03"
 #define MAX     2048
 
-/* TODO: refactor the code(partially done). Its kinda ugly and written within a couple of hours. 
- * The reason for creating this is to compare python, perl and C implementations 
- * (perl uses regexp hence its the slowest version. Even in perl - regexp sucks) 
+/* TODO: refactor the code(partially done). Its kinda ugly and written within 
+ * a couple of hours. The reason for creating this is to compare python, perl 
+ * and C implementations (perl uses regexp hence its the slowest version. Even 
+ * in perl - regexp sucks) 
  */
 
 static void parse(char *fname); /* main parsing logic */
@@ -64,7 +93,6 @@ parse(char *fname)
   bool inside = false;
   char line[MAX];
 
- 
   if (fname && strlen(fname) == 1 && fname[0] == '-') 
     in = stdin;
   else {
