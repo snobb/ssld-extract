@@ -35,8 +35,8 @@
 
 #include "conn.h"
 
-#define VERSION "1.03"
-#define MAX     2048
+#define VERSION "1.04"
+#define MAX     4096
 
 /* TODO: refactor the code(partially done). Its kinda ugly and written within 
  * a couple of hours. The reason for creating this is to compare python, perl 
@@ -107,11 +107,11 @@ parse(char *fname)
     cn = port = 0;
     if (strncmp(line, "New", 3) == 0) {
       char *strp;
-      for (strp = line; *strp != '#'; strp++)
+      for (strp = line; *strp != '#' && *strp != '\0'; strp++)
         ;
       sscanf(strp, "#%d:", &cn); 
 
-      for(; *(++strp) != '(';)
+      for(; *(++strp) != '(' && *strp != '\0';)
         ;
       sscanf(strp, "(%d)", &port);
 
