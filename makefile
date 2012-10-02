@@ -2,7 +2,7 @@ TARGET = ssld-extract
 SRC = ${wildcard *.c}
 OBJ = ${SRC:.c=.o}
 CC ?= cc
-CFLAGS = -Wall 
+CFLAGS = -Wall
 LFLAGS =
 STRIP = strip
 INSTALL = install
@@ -20,11 +20,8 @@ debug: LFLAGS += -g
 debug: build
 
 release: CFLAGS += -Os
-release: LFLAGS += 
+release: LFLAGS += -s
 release: clean build
-ifeq (${CC}, cc)
-	${STRIP} ${TARGET}
-endif
 
 build: build_host.h ${TARGET}
 
@@ -36,6 +33,9 @@ build_host.h:
 
 ${TARGET}: build_host.h ${OBJ}
 	${CC} ${LFLAGS} -o $@ ${OBJ}	
+
+%.o : %.c
+	${CC} ${CFLAGS} -c $?
 
 install: release
 	${INSTALL} ${INSTALL_ARGS} ${TARGET} ${INSTALL_DIR}
