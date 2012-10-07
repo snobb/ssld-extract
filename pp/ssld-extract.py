@@ -26,7 +26,7 @@ import sys, signal
 # TODO: I am new to python so I reckon the code needs optimisation and refactoring
 #=============================================================
 conf = { 'ports': set(), 'conns': set() }
-version = '0.12'
+version = '0.12c' # python < 2.7 compatible
 
 #=============================================================
 def parse(infile):
@@ -39,7 +39,7 @@ def parse(infile):
         try:
             fh = open(infile, 'r')
         except IOError:
-            die("cannot open file {0}".format(infile))
+            die("cannot open file %s" % infile)
         needclose = True
 
     # main logic here
@@ -93,7 +93,7 @@ def readargs():
             elif val == '-':
                 infile = '-'
             elif val[0] == '-':
-                die("bad argument {}".format(val))
+                die("bad argument %s" % val)
             else:
                 infile = val
     if infile == None:
@@ -106,13 +106,13 @@ def readvalues(values, cfgset):
         if (p.isdigit()):
             conf[cfgset].add(int(p))
         else:
-            die("Invalid format {}".format(p))
+            die("Invalid format %s" % p)
 
 #=============================================================
 def usage():
-    print """ssld-extract.py (python-edition) v{} Alex Kozadaev(C)
+    print """ssld-extract (python-edition) v%s Alex Kozadaev(C)
 
-    ssld-extact.py [-n x,y | -p n,m] [ssldump filename | - to read from pipe]
+    ssld-extact [-n x,y | -p n,m] [ssldump filename | - to read from pipe]
 
     Extract one or more connections from a SSL dump file.
 
@@ -124,12 +124,12 @@ def usage():
     Firstly python version was as twise as slower then the perl version. But after refactoring I 
     managed  to make it even faster. I tested both versions by parsing 173 megabyte ssldump file
     and python was ~0.7sec faster this time.
-""".format(version)
+""" % version
     exit()
 
 #=============================================================
 def die(msg):
-    print "ERROR: {}".format(msg)
+    print "ERROR: %s" % msg
     exit(1)
 
 #=============================================================
