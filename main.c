@@ -105,7 +105,7 @@ parse(char *fname)
 
   while (readline(in, line, MAX)) {
     cn = port = 0;
-    if (strncmp(line, "New", 3) == 0) {
+    if (strncmp(line, "New", 3) == 0) { /* New connection */
       char *strp;
       for (strp = line; *strp != '#' && *strp != '\0'; strp++)
         ;
@@ -119,14 +119,14 @@ parse(char *fname)
         puts(line);
         inside = true;
       }
-    } else if (isdigit(line[0])) {
+    } else if (isdigit(line[0])) { /* existing connection (start) */
       sscanf(line, "%d", &cn);
       if (conn_exists(cn, -1)) {
         puts(line);
         inside = true;
       } else
         inside = false;
-    } else if (isspace(line[0]) && inside) 
+    } else if (isspace(line[0]) && inside) /* existing connection (continuation) */
       puts(line);
   }
   if (closable)
