@@ -4,12 +4,11 @@ OBJ = ${SRC:.c=.o}
 CC ?= cc
 CFLAGS = -Wall
 LFLAGS =
-STRIP = strip
 INSTALL = install
 INSTALL_ARGS = -o root -g wheel -m 755 
 INSTALL_DIR = /usr/local/bin/
 
-ifeq (${CC}, cc)
+ifeq (${CC}, ${filter ${CC}, cc clang})
 	CFLAGS += -std=c99 -pedantic
 endif
 
