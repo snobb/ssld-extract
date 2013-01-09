@@ -26,7 +26,7 @@ import sys, signal
 # TODO: I am new to python so I reckon the code needs optimisation and refactoring
 #=============================================================
 conf = { 'ports': set(), 'conns': set() }
-version = '0.12c' # python < 2.7 compatible
+version = '0.12d' # python < 2.7 compatible
 
 #=============================================================
 def parse(infile):
@@ -139,6 +139,7 @@ def handler(signum, frame):
 
 #==[ main ]===================================================
 if __name__ == '__main__':
+    signal.signal(signal.SIGPIPE, signal.SIG_DFL) # handling pythons non-default SIGPIPE
     signal.signal(signal.SIGINT, handler)
     signal.signal(signal.SIGTERM, handler)
     parse(readargs())

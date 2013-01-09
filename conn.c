@@ -52,7 +52,7 @@ conn_add(int cn, int port)
 {
   conn.cn[conn.size] = cn;
   conn.port[conn.size++] = port;
-  
+
   if (conn.size >= conn.max) {
     conn.cn = realloc(conn.cn, conn.max *= 2);
     conn.port = realloc(conn.port, conn.max);

@@ -20,7 +20,7 @@ struct conn_st {
 };
 
 /* initialize global structure */
-void conn_init();                    
+void conn_init();
 
 /* check if either conn number or port exists in the records */
 bool conn_exists(int cn, int port);
