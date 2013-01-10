@@ -66,7 +66,7 @@ conn_add(int cn, int port)
 
 /*=============================================================================*/
 void
-conn_init()
+conn_init(void)
 {
   conn.cn = calloc(INIT, sizeof(*conn.cn));
   conn.port = calloc(INIT, sizeof(*conn.port));
@@ -80,7 +80,7 @@ conn_init()
 
 /*=============================================================================*/
 void
-conn_free()
+conn_free(void)
 {
   free(conn.cn);
   free(conn.port);

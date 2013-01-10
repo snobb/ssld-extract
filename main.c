@@ -35,7 +35,7 @@
 
 #include "conn.h"
 
-#define VERSION "1.04"
+#define VERSION "1.04a"
 #define MAX     4096
 
 /* TODO: refactor the code(partially done). Its kinda ugly and written within 
