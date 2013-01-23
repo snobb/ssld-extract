@@ -26,7 +26,7 @@ import sys, signal
 # TODO: I am new to python so I reckon the code needs optimisation and refactoring
 #=============================================================
 conf = { 'ports': set(), 'conns': set() }
-version = '0.12d' # python < 2.7 compatible
+version = '0.12e' # python < 2.7 compatible
 
 #=============================================================
 def parse(infile):
@@ -49,7 +49,7 @@ def parse(infile):
                 port = line[ line.index('(')+1 : line.index(')') ]
                 conn = line[ line.index('#')+1 : line.index(':') ]
             except ValueError:
-                warn("cannot parse connection record")
+                print >> sys.stderr, ("cannot parse connection record")
                 next
 
             if ((conn.isdigit() and int(conn) in conf['conns']) or 
