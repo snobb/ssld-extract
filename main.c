@@ -35,7 +35,7 @@
 
 #include "conn.h"
 
-#define VERSION "1.04a"
+#define VERSION "1.04b"
 #define MAX     4096
 
 /* TODO: refactor the code(partially done). Its kinda ugly and written within 
@@ -44,8 +44,9 @@
  * in perl - regexp sucks) 
  */
 
-static void parse(char *fname); /* main parsing logic */
-static bool readline(FILE *in, char *str, int max); 
+static void parse(const char *fname); /* main parsing logic */
+static bool check_next_ssl(const char line[]);
+static bool readline(FILE *in, char *str, const int max); 
 static void readvalues(char *line, bool iscn);  /* true = connection number, false = port */
 static void usage(void);
 
@@ -85,7 +86,7 @@ main(int argc, char **argv)
 
 /*=============================================================================*/
 static void
-parse(char *fname)
+parse(const char *fname)
 {
   int cn, port;
   FILE *in;
@@ -105,7 +106,7 @@ parse(char *fname)
 
   while (readline(in, line, MAX)) {
     cn = port = 0;
-    if (strncmp(line, "New", 3) == 0) { /* New connection */
+    if (strncmp(line, "New ", 4) == 0) { /* New connection */
       char *strp;
       for (strp = line; *strp != '#' && *strp != '\0'; strp++)
         ;
@@ -119,7 +120,7 @@ parse(char *fname)
         puts(line);
         inside = true;
       }
-    } else if (isdigit(line[0])) { /* existing connection (start) */
+    } else if (check_next_ssl(line)) { /* existing connection (start) */
       sscanf(line, "%d", &cn);
       if (conn_exists(cn, -1)) {
         puts(line);
@@ -135,7 +136,18 @@ parse(char *fname)
 
 /*=============================================================================*/
 static bool
-readline(FILE *in, char *str, int max)
+check_next_ssl(const char *line)
+{
+  int i = 0;
+  while (isdigit(line[i]))
+    i++;
+  return i > 0 && line[i] == ' ';
+}
+
+
+/*=============================================================================*/
+static bool
+readline(FILE *in, char *str, const int max)
 {
   int i = 0;
   char ch;
