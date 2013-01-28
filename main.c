@@ -138,9 +138,9 @@ parse(const char *fname)
 static bool
 check_next_ssl(const char *line)
 {
-  int i = 0;
-  while (isdigit(line[i]))
-    i++;
+  int i;
+  for (i = 0; isdigit(line[i]); i++)
+    ;
   return i > 0 && line[i] == ' ';
 }
 
