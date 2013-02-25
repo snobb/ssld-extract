@@ -1,23 +1,16 @@
 #ifndef CONN_H
-#define CONN_H 
+#define CONN_H
 
 /*    Desclarations    */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define INIT 10
+#define INIT 16
 
 /* convenience macros for adding stuff to the configuration */
 #define conn_addc(c) (conn_add(c, 0))
 #define conn_addp(p) (conn_add(0, p))
-
-struct conn_st {
-  int *cn;       /* connection numbers */
-  int *port;     /* ephimeral ports */
-  int  size;     /* current size of the array */
-  int  max;      /* maximum size (extended when reached - realloc) */
-};
 
 /* initialize global structure */
 void conn_init();
