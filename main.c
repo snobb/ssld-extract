@@ -39,10 +39,9 @@
 #define MAX     4096
 
 /*
- * Its kinda ugly and written within * a couple of hours. The reason
- * for creating this is to compare python, perl and C implementations 
- * (perl uses regexp hence its the slowest version. Even in perl -
- * regexp sucks) 
+ * The reason for creating this is to compare python, perl and C
+ * implementations (perl uses regexp hence its the slowest version. Even
+ * in perl - regexp sucks)
  */
 
 static void parse(const char *fname); /* main parsing logic */

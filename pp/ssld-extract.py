@@ -21,14 +21,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.#
 
-import sys, signal
+import sys, getopt
 
-# TODO: I am new to python so I reckon the code needs optimisation and refactoring
-#=============================================================
 conf = { 'ports': set(), 'conns': set() }
-version = '0.12e' # python < 2.7 compatible
+version = '0.12f' # python < 2.7 compatible
 
-#=============================================================
+# =======================================================================
 def parse(infile):
     needclose = False
     inside = False
@@ -49,7 +47,7 @@ def parse(infile):
                 port = line[ line.index('(')+1 : line.index(')') ]
                 conn = line[ line.index('#')+1 : line.index(':') ]
             except ValueError:
-                print >> sys.stderr, ("cannot parse connection record")
+                print >> sys.stderr, "error: cannot parse connection record"
                 next
 
             if ((conn.isdigit() and int(conn) in conf['conns']) or 
@@ -75,32 +73,27 @@ def parse(infile):
     if needclose:
         fh.close()
 
-#=============================================================
+# =======================================================================
 def readargs():
-    infile = None
     if (len(sys.argv) == 1): usage()
-    program = sys.argv.pop(0)
-    for val in sys.argv:
-            if val == '-p':
-                newval = sys.argv.pop(1)
-                readvalues(newval, 'ports')
-            elif val == '-n':
-                newval = sys.argv.pop(1)
-                readvalues(newval, 'conns')
-            elif val == '-h':
-                usage()
-                exit()
-            elif val == '-':
-                infile = '-'
-            elif val[0] == '-':
-                die("bad argument %s" % val)
-            else:
-                infile = val
-    if infile == None:
-        die("no source given")
-    return infile
 
-#=============================================================
+    sys.argv.pop(0)
+    opts, infile = getopt.getopt(sys.argv, "hp:n:")
+
+    for k,v in opts:
+        if k == '-p':
+            readvalues(v, 'ports')
+        elif k == '-n':
+           readvalues(v, 'conns')
+        elif k == '-h':
+           usage()
+           exit()
+    if len(infile) == 0:
+        die("no source given")
+
+    return infile[0]
+
+# =======================================================================
 def readvalues(values, cfgset):
     for p in values.split(','):
         if (p.isdigit()):
@@ -108,7 +101,7 @@ def readvalues(values, cfgset):
         else:
             die("Invalid format %s" % p)
 
-#=============================================================
+# =======================================================================
 def usage():
     print """ssld-extract (python-edition) v%s Alex Kozadaev(C)
 
@@ -117,31 +110,29 @@ def usage():
     Extract one or more connections from a SSL dump file.
 
         Usage:
-            -n    comma separated list of connection numbers (no spaces allowed)
-            -p    comma separated list of client port numbers (no spaces allowed)
+            -n    comma separated list of connections (no spaces allowed)
+            -p    comma separated list of client ports (no spaces allowed)
             -h    this text
 
-    Firstly python version was as twise as slower then the perl version. But after refactoring I 
-    managed  to make it even faster. I tested both versions by parsing 173 megabyte ssldump file
-    and python was ~0.7sec faster this time.
-""" % version
-    exit()
+    Firstly python version was as twise as slower then the perl version.
+    But after refactoring I managed  to make it even faster. I tested both
+    versions by parsing 173 megabyte ssldump file and python was ~0.7sec
+    faster this time.\n """ % version
+    exit(0)
 
-#=============================================================
+# =======================================================================
 def die(msg):
-    print "ERROR: %s" % msg
+    print >> sys.stderr, "error: %s" % msg
     exit(1)
 
-#=============================================================
-def handler(signum, frame):
-    print "\nexiting..."
-    exit(1)
-
-#==[ main ]===================================================
+# ==[ main ]=============================================================
 if __name__ == '__main__':
-    signal.signal(signal.SIGPIPE, signal.SIG_DFL) # handling pythons non-default SIGPIPE
-    signal.signal(signal.SIGINT, handler)
-    signal.signal(signal.SIGTERM, handler)
-    parse(readargs())
+    try:
+        parse(readargs())
+    except KeyboardInterrupt:
+        print >> sys.stderr, "\ninterrupted..."
+        exit(1)
+    except IOError, e:
+        exit(0) # SIGPIPE handling
 
 # vim: set tabstop=4 softtabstop=4 shiftwidth=4 smarttab ai expandtab
