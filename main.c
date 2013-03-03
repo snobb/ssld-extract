@@ -45,18 +45,20 @@
  * in perl - regexp sucks)
  */
 
-static void parse(const char *fname, const bool show_datetime); /* main parsing logic */
+static void parse(const char *fname, const bool show_datetime, const bool use_colours); /* main parsing logic */
 static bool check_next_ssl(const char line[]);
 static bool readline(FILE *in, char *str, const int max); 
 static void readvalues(char *line, bool iscn);  /* true = conn, false = port */
 static void usage(void);
 static size_t timestamp_to_date(char *line, size_t maxlen);
+static void set_colour(int colour, bool bold);
 
 /* =================================================================== */
 int main(int argc, char **argv)
 {
     char *fname = NULL;
     bool show_datetime = false;
+    bool use_colours = false;
 
     if (argc == 1) {
         usage();
@@ -78,6 +80,9 @@ int main(int argc, char **argv)
                 case 't':
                     show_datetime = true;
                     break;
+                case 'c':
+                    use_colours = true;
+                    break;
                 default:
                     usage();
                     fputs("ERROR: Invalid argument\n", stderr);
@@ -88,7 +93,7 @@ int main(int argc, char **argv)
         }
     } /* reading arguments */
 
-    parse(fname, show_datetime);
+    parse(fname, show_datetime, use_colours);
     return 0;
 }
 
@@ -99,13 +104,14 @@ int main(int argc, char **argv)
  *  2. <connection number> = next packet in the given connection
  *  3. empty char <== depending on whether we're inside or not (see 2.)
  */
-static void parse(const char *fname, const bool show_datetime)
+static void parse(const char *fname, const bool show_datetime, const bool use_colours)
 {
     int cn, port;
     FILE *in;
     bool closable = false;
     bool inside = false;
     char line[MAX];
+    int colour;
 
     if (fname && strlen(fname) == 1 && fname[0] == '-') 
         in = stdin;
@@ -129,22 +135,28 @@ static void parse(const char *fname, const bool show_datetime)
                 ;
             sscanf(strp, "(%d)", &port);
 
-            if(conn_exists(cn, port)) {
+            if((colour=conn_exists(cn, port)) >= 0) {
+                if(use_colours) set_colour(colour,true);
                 puts(line);
+                if(use_colours) set_colour(-1,true);
                 inside = true;
             }
         } else if (check_next_ssl(line)) { /* existing conn. (start) */
             sscanf(line, "%d", &cn);
-            if (conn_exists(cn, -1)) {
+            if ((colour=conn_exists(cn, -1)) >= 0) {
                 if(show_datetime) {
                     timestamp_to_date(line,MAX);
                 }
+                if(use_colours) set_colour(colour,false);
                 puts(line);
+                if(use_colours) set_colour(-1,false);
+
                 inside = true;
             } else
                 inside = false;
-        } else if (isspace(line[0]) && inside) /* existing conn. (cont.) */
+        } else if (isspace(line[0]) && inside) { /* existing conn. (cont.) */
             puts(line);
+        }
     }
     if (closable)
         fclose(in);
@@ -222,6 +234,7 @@ static void usage(void)
         "        -n    comma separated list of connections (no spaces allowed)   \n"
         "        -p    comma separated list of ephimeral port (no spaces allowed)\n"
         "        -t    convert unix timestamps to human-readable dates           \n"
+        "        -c    use colours                                               \n"
         "        -h    this text                                                 \n"
         );
 }
@@ -267,5 +280,17 @@ size_t timestamp_to_date(char *line, size_t maxlen){
     return strlen(line);
 }
 
-/* vim: ts=4 sts=8 sw=4 smarttab et si ci cino+=t0 list */
+/* ===================================================================
+ * set or reset (-1) the foreground colour
+ */
+static void set_colour(int colour, bool bold){
+    if (colour==-1){  /* reset foreground to default */
+        printf("\x1B[39m");  
+        if(bold){ printf("\x1B[22m"); }
+    } else {  /* set the foreground colour 1-7 to avoid black */
+        printf("\x1B[3%dm",colour%6+1);
+        if(bold){ printf("\x1B[1m"); }
+    }
+}
 
+/* vim: ts=4 sts=8 sw=4 smarttab et si ci cino+=t0 list */
