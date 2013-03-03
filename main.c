@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 
 #include "conn.h"
 
@@ -44,16 +45,18 @@
  * in perl - regexp sucks)
  */
 
-static void parse(const char *fname); /* main parsing logic */
+static void parse(const char *fname, const bool show_datetime); /* main parsing logic */
 static bool check_next_ssl(const char line[]);
 static bool readline(FILE *in, char *str, const int max); 
 static void readvalues(char *line, bool iscn);  /* true = conn, false = port */
 static void usage(void);
+static size_t timestamp_to_date(char *line, size_t maxlen);
 
 /* =================================================================== */
 int main(int argc, char **argv)
 {
     char *fname = NULL;
+    bool show_datetime = false;
 
     if (argc == 1) {
         usage();
@@ -72,6 +75,9 @@ int main(int argc, char **argv)
                     break;
                 case 'h':
                     usage(); exit(0);
+                case 't':
+                    show_datetime = true;
+                    break;
                 default:
                     usage();
                     fputs("ERROR: Invalid argument\n", stderr);
@@ -82,7 +88,7 @@ int main(int argc, char **argv)
         }
     } /* reading arguments */
 
-    parse(fname);
+    parse(fname, show_datetime);
     return 0;
 }
 
@@ -93,7 +99,7 @@ int main(int argc, char **argv)
  *  2. <connection number> = next packet in the given connection
  *  3. empty char <== depending on whether we're inside or not (see 2.)
  */
-static void parse(const char *fname)
+static void parse(const char *fname, const bool show_datetime)
 {
     int cn, port;
     FILE *in;
@@ -130,6 +136,9 @@ static void parse(const char *fname)
         } else if (check_next_ssl(line)) { /* existing conn. (start) */
             sscanf(line, "%d", &cn);
             if (conn_exists(cn, -1)) {
+                if(show_datetime) {
+                    timestamp_to_date(line,MAX);
+                }
                 puts(line);
                 inside = true;
             } else
@@ -212,8 +221,50 @@ static void usage(void)
         "    Usage:                                                              \n"
         "        -n    comma separated list of connections (no spaces allowed)   \n"
         "        -p    comma separated list of ephimeral port (no spaces allowed)\n"
+        "        -t    convert unix timestamps to human-readable dates           \n"
         "        -h    this text                                                 \n"
         );
+}
+
+/* ===================================================================
+ * read the starting line of an existing connection and convert
+ * the timestamp to a human-readable date
+ */
+size_t timestamp_to_date(char *line, size_t maxlen){
+    long int seconds;
+    char subseconds[10];
+    time_t timestamp;
+    struct tm tm;
+    char *strp,*strp_start;
+    char line_format[maxlen];
+
+    /* move strp to the start of the timestamp in the line */
+    for (strp=line; isdigit(*strp) && *strp != '\0'; strp++);
+    for (; *strp == ' ' && *strp != '\0'; strp++);
+    for (; isdigit(*strp) && *strp != '\0'; strp++);
+    for (; *strp == ' ' && *strp != '\0'; strp++);
+    if (strp == line || *strp == '\0'){
+        return -1;  /* unexpected line format (conn# and packet#) */
+    }
+    strp_start = strp;
+
+    /* timestamp to struct tm with timezone info */
+    if (sscanf(strp, "%ld.%9s", &seconds, subseconds) != 2){
+        return -2;  /* unexpected line format (timestamp.subseconds) */
+    }
+    timestamp = (time_t) seconds;
+    tm = *localtime(&timestamp);
+
+    /* move strp to the end of the timestamp in the line */
+    for(; isdigit(*strp) && *strp != '\0'; strp++);
+    strp++;     /* skip the . */
+    for(; isdigit(*strp) && *strp != '\0'; strp++);
+    for(; *strp == ' ' && *strp != '\0'; strp++);
+
+    /* re-formatting of the line, assumes no % in the original line */
+    snprintf(line_format,maxlen,"%%Y-%%m-%%d %%H:%%M:%%S.%s %%Z %s",subseconds,strp);
+    strftime(strp_start, maxlen, line_format, &tm);
+    return strlen(line);
 }
 
 /* vim: ts=4 sts=8 sw=4 smarttab et si ci cino+=t0 list */
