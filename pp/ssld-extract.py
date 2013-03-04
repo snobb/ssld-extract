@@ -43,7 +43,7 @@ def parse(infile):
 
     # main logic here
     for line in fh:
-        if line[:3] == "New":
+        if line[:4] == "New ":
             try:
                 port = line[ line.index("(")+1 : line.index(")") ]
                 conn = line[ line.index("#")+1 : line.index(":") ]
@@ -80,19 +80,19 @@ def parse(infile):
 # =======================================================================
 def replace_date(line):
     """ replace the unix timestamp with the human readable datetime """
-    start = 0
-    unx = ""
+    unx, start = "", 0
     try:
         for idx, ch in enumerate(line):
             if ch.isdigit():
                 if start == 0: start = idx
                 unx += ch
-                if (idx - start) >= 10: break
             else:
-                unx = ""
-                start = 0
-        date = time.ctime(int(unx))
+                if len(unx) >= 10:
+                    break
+                unx, start = "", 0
+        date = time.strftime("%d-%m-%Y %H:%M:%S", time.localtime(int(unx)))
         end = start + len(unx) + 5
+        date += line[end-5:end]
         return line[:start] + " [" + date + "] " + line[end:]
     except ValueError, TypeError:
         return line
