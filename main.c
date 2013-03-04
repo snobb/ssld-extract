@@ -228,7 +228,7 @@ static void usage(void)
 {
     puts(
         "ssld-extract v" VERSION " Alex Kozadaev(c)                              \n\n"
-        "ssld-extact [-n x,y | -p n,m] [ssldump filename | - (pipe)]             \n\n"
+        "ssld-extact [-n x,y | -p n,m] [-c] [-t] [ssldump filename | - (pipe)]             \n\n"
         "Extract one or more connections from a SSL dump file.                   \n\n"
         "    Usage:                                                              \n"
         "        -n    comma separated list of connections (no spaces allowed)   \n"
