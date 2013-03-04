@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # { ssld-extract.py }
-# Copyright (C) 2012 Alex Kozadaev [akozadaev at yahoo com]
+# Copyright (C) 2012-2013 Alex Kozadaev [akozadaev at yahoo com]
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -21,51 +21,55 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.#
 
-import sys, getopt
+import sys, getopt, time
 
-conf = { 'ports': set(), 'conns': set() }
-version = '0.12f' # python < 2.7 compatible
+conf = { "ports": set(), "conns": set(), "date": False }
+version = "0.12g" # python < 2.7 compatible
 
 # =======================================================================
 def parse(infile):
+    """ main parsing logic """
     needclose = False
     inside = False
 
-    if infile == '-':
+    if infile == "-":
         fh = sys.stdin
     else:
         try:
-            fh = open(infile, 'r')
+            fh = open(infile, "r")
         except IOError:
             die("cannot open file %s" % infile)
         needclose = True
 
     # main logic here
-    for line in fh: 
-        if line[:3] == 'New':
+    for line in fh:
+        if line[:3] == "New":
             try:
-                port = line[ line.index('(')+1 : line.index(')') ]
-                conn = line[ line.index('#')+1 : line.index(':') ]
+                port = line[ line.index("(")+1 : line.index(")") ]
+                conn = line[ line.index("#")+1 : line.index(":") ]
             except ValueError:
                 print >> sys.stderr, "error: cannot parse connection record"
                 next
 
-            if ((conn.isdigit() and int(conn) in conf['conns']) or 
-                (port.isdigit() and int(port) in conf['ports'])):
+            if ((conn.isdigit() and int(conn) in conf["conns"]) or
+                (port.isdigit() and int(port) in conf["ports"])):
                 print line,
-                conf['conns'].add(int(conn))
+                conf["conns"].add(int(conn))
                 inside = True
         elif line[0].isspace():
             if inside: print line,
         elif line[0].isdigit():
             try:
-                val = line[: line.index(' ') ]
+                val = line[: line.index(" ") ]
             except ValueError:
                 inside = False
                 next
 
-            if val.isdigit() and (int(val) in conf['conns']):
-                print line,
+            if val.isdigit() and (int(val) in conf["conns"]):
+                if conf["date"]:
+                    print replace_date(line),
+                else:
+                    print line,
                 inside = True
             else:
                 inside = False
@@ -74,20 +78,42 @@ def parse(infile):
         fh.close()
 
 # =======================================================================
+def replace_date(line):
+    """ replace the unix timestamp with the human readable datetime """
+    start = 0
+    unx = ""
+    try:
+        for idx, ch in enumerate(line):
+            if ch.isdigit():
+                if start == 0: start = idx
+                unx += ch
+                if (idx - start) >= 10: break
+            else:
+                unx = ""
+                start = 0
+        date = time.ctime(int(unx))
+        end = start + len(unx) + 5
+        return line[:start] + " [" + date + "] " + line[end:]
+    except ValueError, TypeError:
+        return line
+
+# =======================================================================
 def readargs():
     if (len(sys.argv) == 1): usage()
 
     sys.argv.pop(0)
-    opts, infile = getopt.getopt(sys.argv, "hp:n:")
+    opts, infile = getopt.getopt(sys.argv, "hdp:n:")
 
     for k,v in opts:
-        if k == '-p':
-            readvalues(v, 'ports')
-        elif k == '-n':
-           readvalues(v, 'conns')
-        elif k == '-h':
-           usage()
-           exit()
+        if k == "-p":
+            readvalues(v, "ports")
+        elif k == "-n":
+            readvalues(v, "conns")
+        elif k == "-d":
+            conf["date"] = True;
+        elif k == "-h":
+            usage()
+            exit()
     if len(infile) == 0:
         die("no source given")
 
@@ -95,7 +121,7 @@ def readargs():
 
 # =======================================================================
 def readvalues(values, cfgset):
-    for p in values.split(','):
+    for p in values.split(","):
         if (p.isdigit()):
             conf[cfgset].add(int(p))
         else:
@@ -112,6 +138,7 @@ def usage():
         Usage:
             -n    comma separated list of connections (no spaces allowed)
             -p    comma separated list of client ports (no spaces allowed)
+            -d    convert unix timestamps
             -h    this text
 
     Firstly python version was as twise as slower then the perl version.
@@ -126,7 +153,7 @@ def die(msg):
     exit(1)
 
 # ==[ main ]=============================================================
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         parse(readargs())
     except KeyboardInterrupt:
@@ -135,4 +162,4 @@ if __name__ == '__main__':
     except IOError, e:
         exit(0) # SIGPIPE handling
 
-# vim: set tabstop=4 softtabstop=4 shiftwidth=4 smarttab ai expandtab
+# vim: set tabstop=4 softtabstop=4 shiftwidth=4 smarttab ai expandtab list
