@@ -39,6 +39,12 @@
 #define VERSION "1.04c"
 #define MAX     4096
 
+/* Macro to use ANSI colour codes in the output */
+#define colour_reset()  (printf("\x1B[39m"))
+#define bold_reset()    (printf("\x1B[22m"))
+#define colour_set(c)   (printf("\x1B[3%dm",c%6+1))
+#define bold_set()      (printf("\x1B[1m"))
+
 /*
  * The reason for creating this is to compare python, perl and C
  * implementations (perl uses regexp hence its the slowest version. Even
@@ -51,7 +57,6 @@ static bool readline(FILE *in, char *str, const int max);
 static void readvalues(char *line, bool iscn);  /* true = conn, false = port */
 static void usage(void);
 static size_t timestamp_to_date(char *line, size_t maxlen);
-static void set_colour(int colour, bool bold);
 
 /* =================================================================== */
 int main(int argc, char **argv)
@@ -136,9 +141,15 @@ static void parse(const char *fname, const bool show_datetime, const bool use_co
             sscanf(strp, "(%d)", &port);
 
             if((colour=conn_exists(cn, port)) >= 0) {
-                if(use_colours) set_colour(colour,true);
+                if(use_colours) { 
+                    colour_set(colour);
+                    bold_set();
+                }
                 puts(line);
-                if(use_colours) set_colour(-1,true);
+                if(use_colours) {
+                    colour_reset();
+                    bold_reset();
+                }
                 inside = true;
             }
         } else if (check_next_ssl(line)) { /* existing conn. (start) */
@@ -147,9 +158,9 @@ static void parse(const char *fname, const bool show_datetime, const bool use_co
                 if(show_datetime) {
                     timestamp_to_date(line,MAX);
                 }
-                if(use_colours) set_colour(colour,false);
+                if(use_colours) colour_set(colour);
                 puts(line);
-                if(use_colours) set_colour(-1,false);
+                if(use_colours) colour_reset();
 
                 inside = true;
             } else
@@ -278,19 +289,6 @@ size_t timestamp_to_date(char *line, size_t maxlen){
     snprintf(line_format,maxlen,"%%Y-%%m-%%d %%H:%%M:%%S.%s %%Z %s",subseconds,strp);
     strftime(strp_start, maxlen, line_format, &tm);
     return strlen(line);
-}
-
-/* ===================================================================
- * set or reset (-1) the foreground colour
- */
-static void set_colour(int colour, bool bold){
-    if (colour==-1){  /* reset foreground to default */
-        printf("\x1B[39m");  
-        if(bold){ printf("\x1B[22m"); }
-    } else {  /* set the foreground colour 1-7 to avoid black */
-        printf("\x1B[3%dm",colour%6+1);
-        if(bold){ printf("\x1B[1m"); }
-    }
 }
 
 /* vim: ts=4 sts=8 sw=4 smarttab et si ci cino+=t0 list */
