@@ -36,7 +36,7 @@
 
 #include "conn.h"
 
-#define VERSION "1.04d"
+#define VERSION "1.04e"
 #define MAX     4096
 
 /* Macro to use ANSI colour codes in the output */
@@ -51,8 +51,8 @@
  * in perl - regexp sucks)
  */
 
-static void parse(const char *fname, const bool show_datetime, const bool use_colours); /* main parsing logic */
-static bool check_next_ssl(const char line[]);
+static void parse(const char *fname, const bool show_datetime,
+                  const bool use_colours); /* main parsing logic */
 static bool readline(FILE *in, char *str, const int max); 
 static void readvalues(char *line, bool iscn);  /* true = conn, false = port */
 static void usage(void);
@@ -109,7 +109,8 @@ int main(int argc, char **argv)
  *  2. <connection number> = next packet in the given connection
  *  3. empty char <== depending on whether we're inside or not (see 2.)
  */
-static void parse(const char *fname, const bool show_datetime, const bool use_colours)
+static void parse(const char *fname, const bool show_datetime,
+                  const bool use_colours)
 {
     int cn, port;
     FILE *in;
@@ -141,7 +142,7 @@ static void parse(const char *fname, const bool show_datetime, const bool use_co
             sscanf(strp, "(%d)", &port);
 
             if((colour=conn_exists(cn, port)) >= 0) {
-                if(use_colours) { 
+                if(use_colours) {
                     colour_set(colour);
                     bold_set();
                 }
@@ -152,8 +153,12 @@ static void parse(const char *fname, const bool show_datetime, const bool use_co
                 }
                 inside = true;
             }
-        } else if (check_next_ssl(line)) { /* existing conn. (start) */
-            sscanf(line, "%d", &cn);
+        } else if (isdigit(line[0])) { /* exist. conn. (start) */
+            if (sscanf(line, "%d", &cn) == EOF) {
+                inside = false;
+                continue;
+            }
+
             if ((colour=conn_exists(cn, -1)) >= 0) {
                 if(show_datetime) {
                     timestamp_to_date(line,MAX);
@@ -165,26 +170,13 @@ static void parse(const char *fname, const bool show_datetime, const bool use_co
                 inside = true;
             } else
                 inside = false;
-        } else if (isspace(line[0]) && inside) { /* existing conn. (cont.) */
+        } else if (isspace(line[0]) && inside) { /* exist. conn. (cont.) */
             puts(line);
         }
     }
     if (closable)
         fclose(in);
 }
-
-/* ===================================================================
- * Checking for condition where a line starts with a number separated
- * by space or tab
- */
-static bool check_next_ssl(const char *line)
-{
-    int i;
-    for (i = 0; isdigit(line[i]); i++)
-        ;
-    return i > 0 && line[i] == ' ';
-}
-
 
 /* ===================================================================
  * reading a line of text from stdin
