@@ -16,7 +16,7 @@
 void conn_init();
 
 /* check if either conn number or port exists in the records */
-bool conn_exists(int cn, int port);
+int conn_exists(int conn, int port);
 
 /* add a new record - there are two macros for that for conns and ports */
 bool conn_add(int cn, int port);
