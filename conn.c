@@ -37,14 +37,14 @@ static int *portp;         /* ephimeral ports */
 static int size, max;      /* current/max size of the array */
 
 /* =================================================================== */
-bool conn_exists(int conn, int port)
+int conn_exists(int conn, int port)
 {
     for (int i=0; i < size; i++)
         if (connp[i] == conn || portp[i] == port) {
             connp[i] = conn;
-            return true;
+            return i;
         }
-    return false;
+    return -1;
 }
 
 /* =================================================================== */
