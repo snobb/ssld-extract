@@ -264,8 +264,9 @@ size_t timestamp_to_date(char *line, size_t maxlen){
     }
     strp_start = strp;
 
-    /* timestamp to struct tm with timezone info */
-    if (sscanf(strp, "%ld.%9s", &seconds, subseconds) != 2){
+    /* timestamp to struct tm conversion with timezone info. 
+       If before 1995/01/01 (sslv2), assume it's a delta -> no conversion */
+    if (sscanf(strp, "%ld.%9s", &seconds, subseconds) != 2 || seconds < 788918400) {
         return -2;  /* unexpected line format (timestamp.subseconds) */
     }
     timestamp = (time_t) seconds;
