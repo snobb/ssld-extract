@@ -109,7 +109,7 @@ def readargs():
             readvalues(v, "ports")
         elif k == "-n":
             readvalues(v, "conns")
-        elif k == "-d":
+        elif k == "-t":
             conf["date"] = True;
         elif k == "-h":
             usage()
@@ -138,7 +138,7 @@ def usage():
         Usage:
             -n    comma separated list of connections (no spaces allowed)
             -p    comma separated list of client ports (no spaces allowed)
-            -d    convert unix timestamps
+            -t    convert unix timestamps
             -h    this text
 
     Firstly python version was as twise as slower then the perl version.

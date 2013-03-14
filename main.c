@@ -1,6 +1,7 @@
 /*  main.c  */
 
-/*  Copyright (C) 2012 Alex Kozadaev [akozadaev at yahoo com]
+/*  Copyright (C) 2012-2013 Alex Kozadaev [akozadaev at yahoo com]
+ *                     2013 Nick Rolans   [nicolas.rolans at gmail]
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are
@@ -135,7 +136,7 @@ static void parse(const char *fname, const bool show_datetime,
             char *strp;
             for (strp = line; *strp != '#' && *strp != '\0'; strp++)
                 ;
-            sscanf(strp, "#%d:", &cn); 
+            sscanf(strp, "#%d:", &cn);
 
             for(; *(++strp) != '(' && *strp != '\0';)
                 ;
@@ -231,7 +232,7 @@ static void usage(void)
 {
     puts(
         "ssld-extract v" VERSION " Alex Kozadaev(c)                              \n\n"
-        "ssld-extact [-n x,y | -p n,m] [-c] [-t] [ssldump filename | - (pipe)]             \n\n"
+        "ssld-extact [-n x,y | -p n,m] [-c] [-t] [ssldump filename | - (pipe)]   \n\n"
         "Extract one or more connections from a SSL dump file.                   \n\n"
         "    Usage:                                                              \n"
         "        -n    comma separated list of connections (no spaces allowed)   \n"
@@ -255,10 +256,14 @@ size_t timestamp_to_date(char *line, size_t maxlen){
     char line_format[maxlen];
 
     /* move strp to the start of the timestamp in the line */
-    for (strp=line; isdigit(*strp) && *strp != '\0'; strp++);
-    for (; *strp == ' ' && *strp != '\0'; strp++);
-    for (; isdigit(*strp) && *strp != '\0'; strp++);
-    for (; *strp == ' ' && *strp != '\0'; strp++);
+    for (strp=line; isdigit(*strp) && *strp != '\0'; strp++)
+        ;
+    for (; *strp == ' ' && *strp != '\0'; strp++)
+        ;
+    for (; isdigit(*strp) && *strp != '\0'; strp++)
+        ;
+    for (; *strp == ' ' && *strp != '\0'; strp++)
+        ;
     if (strp == line || *strp == '\0'){
         return -1;  /* unexpected line format (conn# and packet#) */
     }
@@ -273,10 +278,13 @@ size_t timestamp_to_date(char *line, size_t maxlen){
     tm = *localtime(&timestamp);
 
     /* move strp to the end of the timestamp in the line */
-    for(; isdigit(*strp) && *strp != '\0'; strp++);
+    for(; isdigit(*strp) && *strp != '\0'; strp++)
+        ;
     strp++;     /* skip the . */
-    for(; isdigit(*strp) && *strp != '\0'; strp++);
-    for(; *strp == ' ' && *strp != '\0'; strp++);
+    for(; isdigit(*strp) && *strp != '\0'; strp++)
+        ;
+    for(; *strp == ' ' && *strp != '\0'; strp++)
+        ;
 
     /* re-formatting of the line, assumes no % in the original line */
     snprintf(line_format,maxlen,"%%Y-%%m-%%d %%H:%%M:%%S.%s %%Z %s",subseconds,strp);
