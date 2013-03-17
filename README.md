@@ -18,7 +18,7 @@ SSLDump filtering tool
 
 Also encluded:
 
-    ssld-extract.py (python edition) v0.12g, Alex Kozadaev(c)
+    ssld-extract.py (python edition) v0.12h, Alex Kozadaev(c)
     ssld-extract.pl (perl edition) v0.22, Alex Kozadaev(c)
 
 

@@ -23,8 +23,20 @@
 
 import sys, getopt, time
 
-conf = { "ports": set(), "conns": set(), "date": False }
-version = "0.12g" # python < 2.7 compatible
+conf = { "ports": set(), "conns": set(), "date": False, "color": False }
+
+version = "0.12h" # python < 2.7 compatible
+
+CLEAR   = "\033[0m"
+# Colors
+BLACK   = "\033[30m"
+RED     = "\033[31m"
+GREEN   = "\033[32m"
+YELLOW  = "\033[33m"
+BLUE    = "\033[34m"
+MAGENTA = "\033[35m"
+CYAN    = "\033[36m"
+WHITE   = "\033[37m"
 
 # =======================================================================
 def parse(infile):
@@ -48,12 +60,12 @@ def parse(infile):
                 port = line[ line.index("(")+1 : line.index(")") ]
                 conn = line[ line.index("#")+1 : line.index(":") ]
             except ValueError:
-                print >> sys.stderr, "error: cannot parse connection record"
+                warn("cannot parse connection record")
                 next
 
             if ((conn.isdigit() and int(conn) in conf["conns"]) or
                 (port.isdigit() and int(port) in conf["ports"])):
-                print line,
+                cprint(line),
                 conf["conns"].add(int(conn))
                 inside = True
         elif line[0].isspace():
@@ -67,9 +79,15 @@ def parse(infile):
 
             if val.isdigit() and (int(val) in conf["conns"]):
                 if conf["date"]:
-                    print replace_date(line),
+                    line = replace_date(line)
+
+                if line.count("RST"):
+                    cprint(line, RED)
+                elif line.count("FIN"):
+                    cprint(line, CYAN)
                 else:
-                    print line,
+                    cprint(line)
+
                 inside = True
             else:
                 inside = False
@@ -102,7 +120,7 @@ def readargs():
     if (len(sys.argv) == 1): usage()
 
     sys.argv.pop(0)
-    opts, infile = getopt.getopt(sys.argv, "hdp:n:")
+    opts, infile = getopt.getopt(sys.argv, "hctp:n:")
 
     for k,v in opts:
         if k == "-p":
@@ -111,6 +129,8 @@ def readargs():
             readvalues(v, "conns")
         elif k == "-t":
             conf["date"] = True;
+        elif k == "-c":
+            conf["color"] = True;
         elif k == "-h":
             usage()
             exit()
@@ -128,10 +148,26 @@ def readvalues(values, cfgset):
             die("Invalid format %s" % p)
 
 # =======================================================================
+def cprint(msg, color=YELLOW, stream=sys.stdout):
+    if conf["color"]:
+        print >> stream, color + msg.rstrip("\n") + CLEAR
+    else:
+        print >> stream, msg
+
+# =======================================================================
+def warn(msg):
+    cprint("error: " + msg, RED, sys.stderr);
+
+# =======================================================================
+def die(msg):
+    warn(msg)
+    exit(1)
+
+# =======================================================================
 def usage():
     print """ssld-extract (python-edition) v%s Alex Kozadaev(C)
 
-    ssld-extact [-d] [-n x,y | -p n,m] [ssldump filename | - (pipe)]
+    ssld-extact [-n x,y | -p n,m] [-d] [-c] [ssldump filename | - (pipe)]
 
     Extract one or more connections from a SSL dump file.
 
@@ -139,6 +175,7 @@ def usage():
             -n    comma separated list of connections (no spaces allowed)
             -p    comma separated list of client ports (no spaces allowed)
             -t    convert unix timestamps
+            -c    colorize output
             -h    this text
 
     Firstly python version was as twise as slower then the perl version.
@@ -146,11 +183,6 @@ def usage():
     versions by parsing 173 megabyte ssldump file and python was ~0.7sec
     faster this time.\n """ % version
     exit(0)
-
-# =======================================================================
-def die(msg):
-    print >> sys.stderr, "error: %s" % msg
-    exit(1)
 
 # ==[ main ]=============================================================
 if __name__ == "__main__":
