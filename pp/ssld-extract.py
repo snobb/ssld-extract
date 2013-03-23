@@ -23,26 +23,24 @@
 
 import sys, getopt, time
 
-conf = { "ports": set(), "conns": set(), "date": False, "color": False }
+conf = { "ports": [], "conns": [], "date": False, "colour": False }
 
-version = "0.12h" # python < 2.7 compatible
+version = "0.12i" # python < 2.7 compatible
 
+# Styles
+BOLD_SET = "\x1B[1m"
+BOLD_UNSET = "\x1B[22m"
+
+# Colours
+getcolour = lambda c: "\033[3%dm" % ((c % 6) + 1)
 CLEAR   = "\033[0m"
-# Colors
-BLACK   = "\033[30m"
-RED     = "\033[31m"
-GREEN   = "\033[32m"
-YELLOW  = "\033[33m"
-BLUE    = "\033[34m"
-MAGENTA = "\033[35m"
-CYAN    = "\033[36m"
-WHITE   = "\033[37m"
 
 # =======================================================================
 def parse(infile):
     """ main parsing logic """
     needclose = False
     inside = False
+    cl = 0
 
     if infile == "-":
         fh = sys.stdin
@@ -65,29 +63,27 @@ def parse(infile):
 
             if ((conn.isdigit() and int(conn) in conf["conns"]) or
                 (port.isdigit() and int(port) in conf["ports"])):
-                cprint(line),
-                conf["conns"].add(int(conn))
+                ci = int(conn)
+                if not ci in conf["conns"]:
+                    conf["conns"].append(ci)
+                if conf["colour"]:
+                    cl = conf["conns"].index(int(conn))
+                cprint(line, getcolour(cl), bold=True),
                 inside = True
         elif line[0].isspace():
             if inside: print line,
         elif line[0].isdigit():
             try:
-                val = line[: line.index(" ") ]
+                conn = line[: line.index(" ") ]
             except ValueError:
                 inside = False
                 next
-
-            if val.isdigit() and (int(val) in conf["conns"]):
+            if conn.isdigit() and int(conn) in conf["conns"]:
                 if conf["date"]:
                     line = replace_date(line)
-
-                if line.count("RST"):
-                    cprint(line, RED)
-                elif line.count("FIN"):
-                    cprint(line, CYAN)
-                else:
-                    cprint(line)
-
+                if conf["colour"]:
+                    cl = conf["conns"].index(int(conn))
+                cprint(line, getcolour(cl))
                 inside = True
             else:
                 inside = False
@@ -130,7 +126,7 @@ def readargs():
         elif k == "-t":
             conf["date"] = True;
         elif k == "-c":
-            conf["color"] = True;
+            conf["colour"] = True;
         elif k == "-h":
             usage()
             exit()
@@ -140,23 +136,28 @@ def readargs():
     return infile[0]
 
 # =======================================================================
-def readvalues(values, cfgset):
+def readvalues(values, cfglst):
     for p in values.split(","):
-        if (p.isdigit()):
-            conf[cfgset].add(int(p))
+        if p.isdigit():
+            if not int(p) in conf[cfglst]:
+                conf[cfglst].append(int(p))
         else:
             die("Invalid format %s" % p)
 
 # =======================================================================
-def cprint(msg, color=YELLOW, stream=sys.stdout):
-    if conf["color"]:
-        print >> stream, color + msg.rstrip("\n") + CLEAR
+def cprint(msg, colour, bold=False, stream=sys.stdout):
+    if conf["colour"]:
+        if bold:
+            print >> stream, (BOLD_SET + colour + msg.rstrip("\n") +
+                              CLEAR + BOLD_UNSET);
+        else:
+            print >> stream, colour + msg.rstrip("\n") + CLEAR
     else:
         print >> stream, msg
 
 # =======================================================================
 def warn(msg):
-    cprint("error: " + msg, RED, sys.stderr);
+    cprint("error: " + msg, colour(0), stream = sys.stderr);
 
 # =======================================================================
 def die(msg):
@@ -175,7 +176,7 @@ def usage():
             -n    comma separated list of connections (no spaces allowed)
             -p    comma separated list of client ports (no spaces allowed)
             -t    convert unix timestamps
-            -c    colorize output
+            -c    colourize output
             -h    this text
 
     Firstly python version was as twise as slower then the perl version.
