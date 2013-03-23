@@ -37,7 +37,7 @@
 
 #include "conn.h"
 
-#define VERSION "1.04e"
+#define VERSION "1.04f"
 #define MAX     4096
 
 /* Macro to use ANSI colour codes in the output */
@@ -65,6 +65,7 @@ int main(int argc, char **argv)
     char *fname = NULL;
     bool show_datetime = false;
     bool use_colours = false;
+    char *arg;
 
     if (argc == 1) {
         usage();
@@ -75,24 +76,29 @@ int main(int argc, char **argv)
     atexit(conn_free);
 
     for (int i=1; i < argc; i++) { /* reading arguments */
-        if (argv[i][0] == '-' && strlen(argv[i]) > 1) {
-            switch(argv[i][1]) {
-                case 'n': case 'p':
-                    readvalues(argv[i+1], argv[i][1] == 'n');
-                    i++;
-                    break;
-                case 'h':
-                    usage(); exit(0);
-                case 't':
-                    show_datetime = true;
-                    break;
-                case 'c':
-                    use_colours = true;
-                    break;
-                default:
-                    usage();
-                    fputs("ERROR: Invalid argument\n", stderr);
-                    exit(1);
+        arg = argv[i];
+        if (*arg == '-' && strlen(arg) > 1) {
+            while (*++arg != '\0') {
+                if (*(arg-1) == 'n' || *(arg-1) == 'p')
+                    *arg = '^';     /* wrong argument */
+                switch(*arg) {
+                    case 'n': case 'p':
+                        readvalues(argv[++i], *arg == 'n');
+                        break;
+                    case 'h':
+                        usage(); exit(0);
+                        break;
+                    case 't':
+                        show_datetime = true;
+                        break;
+                    case 'c':
+                        use_colours = true;
+                        break;
+                    default:
+                        usage();
+                        fputs("ERROR: Invalid argument.\n", stderr);
+                        exit(1);
+                }
             }
         } else {
             fname = argv[i];
