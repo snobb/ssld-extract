@@ -166,7 +166,7 @@ def die(msg):
 
 # =======================================================================
 def usage():
-    print """ssld-extract (python-edition) v%s Alex Kozadaev(C)
+    print """ssld-extract (python-edition) v%s
 
     ssld-extact [-n x,y | -p n,m] [-d] [-c] [ssldump filename | - (pipe)]
 

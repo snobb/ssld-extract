@@ -237,7 +237,7 @@ static void readvalues(char *line, bool iscn)
 static void usage(void)
 {
     puts(
-        "ssld-extract v" VERSION " Alex Kozadaev(c)                              \n\n"
+        "ssld-extract v" VERSION "                                               \n\n"
         "ssld-extact [-n x,y | -p n,m] [-c] [-t] [ssldump filename | - (pipe)]   \n\n"
         "Extract one or more connections from a SSL dump file.                   \n\n"
         "    Usage:                                                              \n"

@@ -89,7 +89,7 @@ sub readarg {
 
 sub usage {
   print <<END
-ssld-extract.pl v$conf->{version}, Alex Kozadaev(c)
+ssld-extract.pl v$conf->{version}
   
   ssld-extact.pl [-n x,y | -p n,m] [ssldump filename | - to read from pipe]
 
