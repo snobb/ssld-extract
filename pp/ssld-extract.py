@@ -25,7 +25,7 @@ import sys, getopt, time
 
 conf = { "ports": [], "conns": [], "date": False, "colour": False }
 
-version = "0.12i" # python < 2.7 compatible
+version = "0.12j" # python < 2.7 compatible
 
 # Styles
 BOLD_SET = "\x1B[1m"
@@ -68,7 +68,7 @@ def parse(infile):
                     conf["conns"].append(ci)
                 if conf["colour"]:
                     cl = conf["conns"].index(int(conn))
-                cprint(line, getcolour(cl), bold=True),
+                cprint(line, getcolour(cl), bold=True)
                 inside = True
         elif line[0].isspace():
             if inside: print line,
@@ -124,9 +124,9 @@ def readargs():
         elif k == "-n":
             readvalues(v, "conns")
         elif k == "-t":
-            conf["date"] = True;
+            conf["date"] = True
         elif k == "-c":
-            conf["colour"] = True;
+            conf["colour"] = True
         elif k == "-h":
             usage()
             exit()
@@ -149,15 +149,15 @@ def cprint(msg, colour, bold=False, stream=sys.stdout):
     if conf["colour"]:
         if bold:
             print >> stream, (BOLD_SET + colour + msg.rstrip("\n") +
-                              CLEAR + BOLD_UNSET);
+                              CLEAR + BOLD_UNSET)
         else:
             print >> stream, colour + msg.rstrip("\n") + CLEAR
     else:
-        print >> stream, msg
+        print >> stream, msg,
 
 # =======================================================================
 def warn(msg):
-    cprint("error: " + msg, colour(0), stream = sys.stderr);
+    cprint("error: " + msg, colour(0), stream = sys.stderr)
 
 # =======================================================================
 def die(msg):
