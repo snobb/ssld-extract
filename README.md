@@ -1,8 +1,8 @@
-ssld-extract v1.04d, Alex Kozadaev(c)
+ssld-extract v1.04f
 
 SSLDump filtering tool
 
-    ssld-extact [-n x,y | -p n,m] [-c] [-t] [ssldump filename | - (pipe)]             
+    ssld-extact [-n x,y | -p n,m] [-c] [-t] [ssldump filename | - (pipe)]
 
     Extract one or more connections from a SSL dump file.
 
@@ -18,7 +18,7 @@ SSLDump filtering tool
 
 Also encluded:
 
-    ssld-extract.py (python edition) v0.12h, Alex Kozadaev(c)
+    ssld-extract.py (python edition) v0.12j, Alex Kozadaev(c)
     ssld-extract.pl (perl edition) v0.22, Alex Kozadaev(c)
 
 
