@@ -43,7 +43,7 @@ while (<PIPE>) {
   # reading new connection record
   if (/New \w+ connection #(\d+): [\d\.]+\((\d+)\)/) {
     print "DEBUG: $1 $2 $conf->{'num'} $conf->{'port'}\n" if $conf->{'debug'};
-    
+
     if ($conf->{'num'}->{$1} || $conf->{'port'}->{$2}) {
       print;
       $conf->{'num'}->{$1}++;
@@ -51,7 +51,7 @@ while (<PIPE>) {
       $in++;
     }
   } elsif (/^\s+/) {     # record belongs to the current record - printing
-    print if $in; 
+    print if $in;
   } elsif (/^(\d+)/) {   # checking if the record belongs to interesting connections
     if ($conf->{'num'}->{$1}) {
       print;
@@ -67,7 +67,7 @@ while (<PIPE>) {
 sub readarg {
   foreach (shift @ARGV) {
     if (/-h/) { &usage(); exit(0); }
-    if (/-n/) { 
+    if (/-n/) {
       my $args = shift @ARGV;
       foreach my $arg (split /,/, $args) {
         $conf->{'num'}->{$arg}++;
@@ -90,11 +90,11 @@ sub readarg {
 sub usage {
   print <<END
 ssld-extract.pl v$conf->{version}
-  
+
   ssld-extact.pl [-n x,y | -p n,m] [ssldump filename | - to read from pipe]
 
   Extract one or more connections from a SSL dump file.
-  
+
   Usage:
     -n    comma separated list of connection numbers (no spaces allowed)
     -p    comma separated list of client port numbers (no spaces allowed)

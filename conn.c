@@ -36,7 +36,6 @@ static int *connp;         /* connection numbers */
 static int *portp;         /* ephimeral ports */
 static int size, max;      /* current/max size of the array */
 
-/* =================================================================== */
 int conn_exists(int conn, int port)
 {
     for (int i=0; i < size; i++)
@@ -47,7 +46,6 @@ int conn_exists(int conn, int port)
     return -1;
 }
 
-/* =================================================================== */
 bool conn_add(int conn, int port)
 {
     connp[size] = conn;
@@ -64,7 +62,6 @@ bool conn_add(int conn, int port)
     return true;
 }
 
-/* =================================================================== */
 void conn_init(void)
 {
     connp = calloc(INIT, sizeof(*connp));
@@ -77,7 +74,6 @@ void conn_init(void)
     max = INIT;
 }
 
-/* =================================================================== */
 void conn_free(void)
 {
     free(connp);

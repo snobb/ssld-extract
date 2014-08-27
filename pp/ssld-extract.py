@@ -35,7 +35,6 @@ BOLD_UNSET = "\x1B[22m"
 getcolour = lambda c: "\033[3%dm" % ((c % 6) + 1)
 CLEAR   = "\033[0m"
 
-# =======================================================================
 def parse(infile):
     """ main parsing logic """
     needclose = False
@@ -91,7 +90,6 @@ def parse(infile):
     if needclose:
         fh.close()
 
-# =======================================================================
 def replace_date(line):
     """ replace the unix timestamp with the human readable datetime """
     unx, start = "", 0
@@ -111,7 +109,6 @@ def replace_date(line):
     except ValueError, TypeError:
         return line
 
-# =======================================================================
 def readargs():
     if (len(sys.argv) == 1): usage()
 
@@ -135,7 +132,6 @@ def readargs():
 
     return infile[0]
 
-# =======================================================================
 def readvalues(values, cfglst):
     for p in values.split(","):
         if p.isdigit():
@@ -144,7 +140,6 @@ def readvalues(values, cfglst):
         else:
             die("Invalid format %s" % p)
 
-# =======================================================================
 def cprint(msg, colour, bold=False, stream=sys.stdout):
     if conf["colour"]:
         if bold:
@@ -155,16 +150,13 @@ def cprint(msg, colour, bold=False, stream=sys.stdout):
     else:
         print >> stream, msg,
 
-# =======================================================================
 def warn(msg):
     cprint("error: " + msg, colour(0), stream = sys.stderr)
 
-# =======================================================================
 def die(msg):
     warn(msg)
     exit(1)
 
-# =======================================================================
 def usage():
     print """ssld-extract (python-edition) v%s
 
@@ -185,7 +177,6 @@ def usage():
     faster this time.\n """ % version
     exit(0)
 
-# ==[ main ]=============================================================
 if __name__ == "__main__":
     try:
         parse(readargs())

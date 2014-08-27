@@ -59,7 +59,6 @@ static void readvalues(char *line, bool iscn);  /* true = conn, false = port */
 static void usage(void);
 static size_t timestamp_to_date(char *line, size_t maxlen);
 
-/* =================================================================== */
 int main(int argc, char **argv)
 {
     char *fname = NULL;
@@ -109,7 +108,7 @@ int main(int argc, char **argv)
     return 0;
 }
 
-/* ===================================================================
+/*
  * Main parsing logic
  * Looking for lines starting with following:
  *  1. "Connection #" <== start of the connection
@@ -185,7 +184,7 @@ static void parse(const char *fname, const bool show_datetime,
         fclose(in);
 }
 
-/* ===================================================================
+/*
  * reading a line of text from stdin
  */
 static bool readline(FILE *in, char *str, const int max)
@@ -201,7 +200,7 @@ static bool readline(FILE *in, char *str, const int max)
     return ch != EOF;
 }
 
-/* ===================================================================
+/*
  * Reading arguments for -c/-p
  * Eg. -c 23,45,67
  */
@@ -233,7 +232,6 @@ static void readvalues(char *line, bool iscn)
     }
 }
 
-/* =================================================================== */
 static void usage(void)
 {
     puts(
@@ -249,7 +247,7 @@ static void usage(void)
         );
 }
 
-/* ===================================================================
+/*
  * read the starting line of an existing connection and convert
  * the timestamp to a human-readable date
  */
